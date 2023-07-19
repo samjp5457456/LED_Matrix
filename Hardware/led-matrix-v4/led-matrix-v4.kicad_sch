@@ -4,6 +4,14 @@
 
   (paper "A1")
 
+  (title_block
+    (title "LED Matrix")
+    (date "2023-07-19")
+    (rev "4")
+    (company "UCCS Senior Design Fall 2023")
+    (comment 1 "Designed by Eleanor Taylor")
+  )
+
   (lib_symbols
     (symbol "1294:1294" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
       (property "Reference" "BT" (at -6.3614 3.8138 0)
