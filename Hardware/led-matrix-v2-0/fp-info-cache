@@ -1,4 +1,4 @@
-21453966886394974
+21466738734523823
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -33921,13 +33921,6 @@ Surface mounted pin header SMD 2x40 2.00mm double row
 0
 80
 80
-Connector_PinHeader_2.54mm
-Connector_PinHeader_2.54mmPinHeader_1x05_P.54mm_TRRS-audio-jack
-
-
-0
-5
-5
 Connector_PinHeader_2.54mm
 PinHeader_1x01_P2.54mm_Horizontal
 Through hole angled pin header, 1x01, 2.54mm pitch, 6mm pin length, single row
@@ -79114,13 +79107,6 @@ Potentiometer horizontal Bourns 3386X
 3
 3
 Potentiometer_THT
-Potentiometer_Bourns_3386_inline_Vertical
-
-
-0
-3
-3
-Potentiometer_THT
 Potentiometer_Bourns_PTA1543_Single_Slide
 Bourns single-gang slide potentiometer, 15.0mm travel, https://www.bourns.com/docs/Product-Datasheets/pta.pdf
 Bourns single-gang slide potentiometer 15.0mm
@@ -83999,6 +83985,27 @@ Logo WEEE
 0
 0
 0
+TI_SN74AHCT125D
+D14
+
+SN74AHCT125D 
+0
+14
+14
+TI_SN74AHCT125D
+D14-L
+
+SN74AHCT125D 
+0
+14
+14
+TI_SN74AHCT125D
+D14-M
+
+SN74AHCT125D 
+0
+14
+14
 TerminalBlock
 TerminalBlock_Altech_AK300-2_P5.00mm
 Altech AK300 terminal block, pitch 5.0mm, 45 degree angled, see http://www.mouser.com/ds/2/16/PCBMETRC-24178.pdf
@@ -88815,6 +88822,13 @@ igbt diode module
 0
 25
 25
+USBC-PowerOnly-Receptacle
+CUI_UJC-HP-3-SMT-TR
+
+
+0
+10
+10
 Valve
 Valve_ECC-83-1
 Valve ECC-83-1 round pins
@@ -88885,6 +88899,48 @@ valve
 0
 9
 8
+Various_LED_Board
+BAT_1294
+
+
+0
+2
+2
+Various_LED_Board
+CONV_OKR-T_10-W12-C
+
+
+0
+5
+5
+Various_LED_Board
+D14
+
+SN74AHCT125D 
+0
+14
+14
+Various_LED_Board
+D14-L
+
+SN74AHCT125D 
+0
+14
+14
+Various_LED_Board
+D14-M
+
+SN74AHCT125D 
+0
+14
+14
+Various_LED_Board
+USB_C_CUI_UJC-HP-3-SMT-TR
+
+
+0
+10
+10
 Varistor
 RV_Disc_D7mm_W3.4mm_P5mm
 Varistor, diameter 7mm, width 3.4mm, pitch 5mm
