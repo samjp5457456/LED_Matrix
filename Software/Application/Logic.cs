@@ -12,84 +12,128 @@ namespace Challenge3JaceAkridge
     internal class Logic
     {
 
+        /* Initialize the file paths, an empty colors string list, a btnColor,
+           and a start and end index.*/
         String filePath = @"C:\Users\jakri\OneDrive\Documents\Pixel Box Images\Images";
         String textPath = @"C:\Users\jakri\OneDrive\Documents\Pixel Box Images\Colors";
         List<string> colors = new List<string>();
         Color btnColor = new Color();
         int startIndex, endIndex;
-
+        
+        /// <summary>
+        /// This method saves the design on the board
+        /// </summary>
+        /// <param name="btn"></param>
+        /// <param name="panel"></param>
         public void SaveDesign(Button[,] btn, Panel[,] panel)
         {
 
             PrepBoard(btn, panel);
 
+            // Open the save file dialog box
             SaveFileDialog saveFile = new SaveFileDialog();
             saveFile.Filter = "JPEG|*.jpg";
             saveFile.Title = "Save Design";
             saveFile.InitialDirectory = filePath;
             saveFile.RestoreDirectory = true;
-            saveFile.ShowDialog();
+            var dialog = saveFile.ShowDialog();
 
-            if (saveFile.FileName != "")
+            if (dialog == System.Windows.Forms.DialogResult.OK)
             {
 
-                int width = panel.GetLength(0);
-                int height = panel.GetLength(1);
-
-                using (Bitmap bmp = new Bitmap(width, height))
+                if (saveFile.FileName != null)
                 {
 
-                    for (int i = 0; i < btn.GetLength(0); i++)
-                    {
+                    SaveData(btn, panel, saveFile);
 
-                        for (int j = 0; j < btn.GetLength(1); j++)
-                        {
+                }
+                else
+                {
 
-                            Rectangle rect = new Rectangle(panel[i, j].Width * i,
-                                panel[i, j].Height * j, panel[i, j].Width, panel[i, j].Height);
-                            panel[i,j].DrawToBitmap(bmp, rect);
-
-                        }
-
-                    }
-
-                    bmp.Save(saveFile.FileName);
+                    MessageBox.Show("Please enter a file name", "Empty File Name", MessageBoxButtons.OK);
 
                 }
 
-                var savedFile = System.IO.Path.GetFileNameWithoutExtension(saveFile.FileName);
-                string path = textPath + "\\" + savedFile + ".txt";
+            }
+            else
+            {
 
-                if (!File.Exists(path))
-                {
-
-                    using (StreamWriter writer = new StreamWriter(path, true))
-                    {
-
-                        for (int i = 0; i < btn.GetLength(0); i++)
-                        {
-
-                            for (int j = 0; j < btn.GetLength(1); j++)
-                            {
-
-                                startIndex = btn[i, j].BackColor.ToString().IndexOf("[") + 1;
-                                endIndex = btn[i, j].BackColor.ToString().IndexOf("]");
-                                writer.WriteLine(btn[i, j].BackColor.ToString().Substring(startIndex, endIndex - startIndex));
-
-                            }
-
-                        }
-
-                        writer.Close();
-
-                    }
-
-                }
+                saveFile.Dispose();
 
             }
 
         }
 
+        /// <summary>
+        /// This method saves the data from the grid in a bitmap and text file
+        /// </summary>
+        /// <param name="btn"></param>
+        /// <param name="panel"></param>
+        /// <param name="saveFile"></param>
+        private void SaveData(Button[,] btn, Panel[,] panel, SaveFileDialog saveFile)
+        {
+
+            // Initialize the width and height for the bitmap file
+            int width = panel.GetLength(0);
+            int height = panel.GetLength(1);
+
+            using (Bitmap bmp = new Bitmap(width, height))
+            {
+
+                for (int i = 0; i < btn.GetLength(0); i++)
+                {
+
+                    for (int j = 0; j < btn.GetLength(1); j++)
+                    {
+
+                        // Draw the rectangle to the bitmap
+                        Rectangle rect = new Rectangle(panel[i, j].Width * i,
+                            panel[i, j].Height * j, panel[i, j].Width, panel[i, j].Height);
+                        panel[i, j].DrawToBitmap(bmp, rect);
+
+                    }
+
+                }
+
+                // Save the file
+                bmp.Save(saveFile.FileName);
+
+            }
+
+            // Get the file path for the text file that will hold the colors on the grid
+            var savedFile = System.IO.Path.GetFileNameWithoutExtension(saveFile.FileName);
+            string path = textPath + "\\" + savedFile + ".txt";
+
+            using (StreamWriter writer = new StreamWriter(path, true))
+            {
+
+                for (int i = 0; i < btn.GetLength(0); i++)
+                {
+
+                    for (int j = 0; j < btn.GetLength(1); j++)
+                    {
+
+                        // Write the name of the color for each line in the file
+                        startIndex = btn[i, j].BackColor.ToString().IndexOf("[") + 1;
+                        endIndex = btn[i, j].BackColor.ToString().IndexOf("]");
+                        writer.WriteLine(btn[i, j].BackColor.ToString().Substring(startIndex, endIndex - startIndex));
+
+                    }
+
+                }
+
+                // Close the writer
+                writer.Close();
+
+            }
+
+        }
+
+        /// <summary>
+        /// This method translates the board data to the panel
+        /// </summary>
+        /// <param name="theGrid"></param>
+        /// <param name="panel"></param>
         public void PrepBoard(Button[,] theGrid, Panel[,] panel)
         {
 
@@ -115,15 +159,25 @@ namespace Challenge3JaceAkridge
             openFile.Title = "Open Design";
             openFile.InitialDirectory = filePath;
             openFile.RestoreDirectory = true;
-            openFile.ShowDialog();
+            var dialog = openFile.ShowDialog();
 
-            if (openFile.OpenFile() != null)
+            if (dialog == System.Windows.Forms.DialogResult.OK)
             {
 
-                LoadData(openFile, btn);
+                if (openFile.OpenFile() != null)
+                {
+
+                    LoadData(openFile, btn);
+
+                }
 
             }
+            else
+            {
 
+                openFile.Dispose();
+
+            }
 
         }
 
@@ -147,7 +201,6 @@ namespace Challenge3JaceAkridge
 
                         btnColor = Color.FromName(colors[counter]);
                         btn[i, j].BackColor = btnColor;
-                        Console.WriteLine(colors[counter]);
                         counter += 1;
 
                     }
@@ -161,4 +214,5 @@ namespace Challenge3JaceAkridge
         }
 
     }
+
 }
