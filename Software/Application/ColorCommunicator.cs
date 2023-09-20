@@ -1,17 +1,22 @@
 using System.Diagnostics.Metrics;
+using System.Text;
 
 namespace Challenge3JaceAkridge
 {
     public partial class ColorCommunicator : Form
     {
 
-        // Initalize button grid, userColor and boolean clear
+        /* Initalize the visible button grid, the invisible panel grid,
+           the user color, an instantiation of the logic class,
+           and booleans for clear, erase, drawing and awaiting click statuses. */
         Button[,] theGrid = new Button[16, 16];
         Panel[,] panel = new Panel[16, 16];
         Color userColor = new Color();
         Logic logic = new Logic();
         Boolean clear = true;
         Boolean erase = false;
+        Boolean drawing = false;
+        Boolean awaitingClick = false;
 
         /// <summary>
         /// This is a constructor that will be called every time the form loads
@@ -25,7 +30,26 @@ namespace Challenge3JaceAkridge
         }
 
         /// <summary>
-        /// This method creates a button grid
+        /// This method shows a textbox upon first opening the application
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ColorCommunicator_Load(object sender, EventArgs e)
+        {
+
+            MessageBox.Show("1. Click a color before clicking anywhere " +
+                "on the box.\n" + "2. Click on a button to start drawing, " +
+                "then click on a button again when you're done to stop.\n" +
+                "3. Click the erase button to start erasing, then click " + 
+                "another button or a color to stop.\n" + "4. Please use descriptive names " + 
+                "when saving your images.", "Some Instructions",
+                MessageBoxButtons.OK);
+
+        }
+
+        /// <summary>
+        /// This method creates the button grid and does the necessary subscriptions
+        /// for the events in the application
         /// </summary>
         public void InstantiateButtons()
         {
@@ -42,10 +66,12 @@ namespace Challenge3JaceAkridge
                     theGrid[row, col] = new Button();
                     panel[row, col] = new Panel();
                     theGrid[row, col].Size = btnSize;
+                    panel[row, col].Size = btnSize;
                     theGrid[row, col].Location = new Point(((this.ClientSize.Width / 2) + counter*btnSize.Width) + (col * btnSize.Width), (row * btnSize.Height) + menuStrip.Height);
                     this.Controls.Add(theGrid[row, col]);
                     theGrid[row, col].FlatStyle = FlatStyle.Flat;
-                    theGrid[row, col].Click += GridButtonClickHandler!; // Subscribe button to click handler
+                    theGrid[row, col].Click += GridButtonClickHandler!;
+                    theGrid[row, col].MouseEnter += OnMouseEnter!;
                     theGrid[row, col].BackColor = Color.Transparent;
                     panel[row, col].BackColor = Color.Transparent;
         
@@ -53,7 +79,10 @@ namespace Challenge3JaceAkridge
 
             }
 
+            // Set up the color and clear buttons
             ColorAndClear(btnSize);
+
+            // Subscribe the clicks of the menu strip buttons to the event handlers
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click!;
             openToolStripMenuItem.Click += openToolStripMenuItem_Click!;
 
@@ -91,34 +120,68 @@ namespace Challenge3JaceAkridge
 
         /// <summary>
         /// This function handled when a button on the grid is clicked.
+        /// The status is changed and the current button back color is changed.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         public void GridButtonClickHandler(object sender, EventArgs e)
         {
 
-            // Mouse enters event?
-            // Unity?
-
-            if (userColor.IsEmpty && erase == false)
+            if (userColor.IsEmpty)
             {
 
-                MessageBox.Show("Please select a color", "No Color Selected", MessageBoxButtons.OK);
+                MessageBox.Show("Please select a color to start drawing", "Select A Color",
+                    MessageBoxButtons.OK);
 
             }
             else
             {
 
-                if (erase)
+                ChangeStatus();
+                ChangeButton(sender);
+
+            }
+
+        }
+
+        /// <summary>
+        /// This method switches the booleans for when the user clicks a button
+        /// </summary>
+        private void ChangeStatus()
+        {
+
+            if (awaitingClick)
+            {
+
+                awaitingClick = false;
+                erase = true;
+
+            }
+            else
+            {
+
+                if (erase == false)
                 {
 
-                    ((Button)sender).BackColor = Color.Transparent;
+                    if (drawing == false)
+                    {
+
+                        drawing = true;
+
+                    }
+                    else
+                    {
+
+                        drawing = false;
+
+                    }
 
                 }
                 else
                 {
 
-                    ((Button)sender).BackColor = userColor;
+                    erase = false;
+                    MessageBox.Show("Erase deactivated.", "Erase Deactivated", MessageBoxButtons.OK);
 
                 }
 
@@ -127,7 +190,58 @@ namespace Challenge3JaceAkridge
         }
 
         /// <summary>
-        /// This method handles what happens when clear is clicked
+        /// The Mouse Enter event is activated when a mouse hovers over the button.
+        /// This method changes the back color of the button depending on the logic
+        /// Set by the booleans.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnMouseEnter(object sender, System.EventArgs e)
+        {
+
+            ChangeButton(sender);
+
+        }
+
+        /// <summary>
+        /// This method changes the back color of the current button based
+        /// on the logic set by the booleans after ChangeStatus().
+        /// </summary>
+        /// <param name="sender"></param>
+        private void ChangeButton(object sender)
+        {
+
+            if (awaitingClick)
+            {
+
+                ((Button)sender).BackColor = ((Button)sender).BackColor;
+
+            }
+            else if (erase)
+            {
+
+                ((Button)sender).BackColor = Color.Transparent;
+
+            }
+            else if (drawing)
+            {
+
+                ((Button)sender).BackColor = userColor;
+
+            }
+            else
+            {
+
+                ((Button)sender).BackColor = ((Button)sender).BackColor;
+
+            }
+
+        }
+
+        /// <summary>
+        /// This method handles what happens when clear is clicked.
+        /// Either tell the user there is nothing to clear or read the result
+        /// from the pop-up dialog box and respond accordingly.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -150,6 +264,7 @@ namespace Challenge3JaceAkridge
                     System.Windows.Forms.DialogResult.Yes)
                 {
 
+                    // Clear the board and reset the buttons
                     ClearBoard();
                     ResetColorButtons();
 
@@ -157,6 +272,7 @@ namespace Challenge3JaceAkridge
                 else
                 {
 
+                    // Keep the colors on the board as is if the user clicks "No"
                     KeepBoard();
 
                 }
@@ -170,6 +286,7 @@ namespace Challenge3JaceAkridge
         /// </summary>
         private bool CheckBoard()
         {
+
             for (int row = 0; row < theGrid.GetLength(0); row++)
             {
 
@@ -188,15 +305,16 @@ namespace Challenge3JaceAkridge
 
             }
 
-            return clear;
+          return clear;
 
-        }
+       }
 
         /// <summary>
-        /// This method clears the board
+        /// This method resets the board, userColor and clear boolean
         /// </summary>
         private void ClearBoard()
         {
+
             for (int row = 0; row < theGrid.GetLength(0); row++)
             {
 
@@ -215,10 +333,11 @@ namespace Challenge3JaceAkridge
         }
 
         /// <summary>
-        /// This method keeps the content of the board currently
+        /// This method keeps the content of the board
         /// </summary>
         private void KeepBoard()
         {
+
             for (int row = 0; row < theGrid.GetLength(0); row++)
             {
 
@@ -230,23 +349,29 @@ namespace Challenge3JaceAkridge
                 }
 
             }
+
         }
 
         /// <summary>
         /// This method sets the user color to the color of the button clicked
-        /// on the bottom of the screen
+        /// to the right of the grid.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ColorButton_ClickHandler(object sender, EventArgs e)
         {
 
+            /* Reset the color buttons, set awatingClick to true, 
+               set the font of the button of the active color to orange, 
+               store the activeColor */
             ResetColorButtons();
 
             ((Button)sender).ForeColor = Color.Orange;
 
             userColor = Color.FromName(((Button)sender).Text);
 
+            /* If the user was erasing, say erasing is deactivated and their active color.
+               Otherwise, notify the user what their active color is in a pop-up box. */
             if (erase == true)
             {
 
@@ -281,16 +406,40 @@ namespace Challenge3JaceAkridge
 
         }
 
+        /// <summary>
+        /// This method calls the necessary methods in the logic class to save a design
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
+            if (erase == true)
+            {
+
+                erase = false;
+
+            }
 
             logic.PrepBoard(theGrid, panel);
             logic.SaveDesign(theGrid, panel);
 
         }
 
+        /// <summary>
+        /// This method calls the necessary methods from the logic class to import a design
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
+            if (erase == true)
+            {
+
+                erase = false;
+
+            }
 
             logic.ImportDesign(theGrid, panel);
 
@@ -304,43 +453,23 @@ namespace Challenge3JaceAkridge
         /// <param name="e"></param>
         private void erasebtn_Click(object sender, EventArgs e)
         {
-            
+
+            /* Set this boolean to true to let the program know the user is about
+               to click the button they would like to start erasing on.*/
+            awaitingClick = true;
+
             CheckBoard();
 
+            // Notify the user if the board is clear. Otherwise, do nothing.
             if (clear)
             {
 
                 MessageBox.Show("Nothing to erase", "Grid Empty", MessageBoxButtons.OK);
 
             }
-            else
-            {
-
-                if (erase == false)
-                {
-
-                    erase = true;
-
-                }
-
-            }
 
         }
 
-        /// <summary>
-        /// This method shows a textbox upon first opening the application
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ColorCommunicator_Load(object sender, EventArgs e)
-        {
-
-            MessageBox.Show("1. Click a color before clicking anywhere " +
-                "on the box.\n" + "2. Click the erase button to start " +
-                "erasing, then click a color to stop.", "Some Instructions",
-                MessageBoxButtons.OK);
-
-        }
     }
 
 }
