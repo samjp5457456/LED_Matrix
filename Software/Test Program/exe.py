@@ -1,12 +1,12 @@
-import tkinter
+from tkinter import *
 
 rows = 16
 columns = 16
 
 btns = [[None for i in range(rows)] for j in range(columns)]
-master = tkinter.Tk()
+master = Tk()
 master.title("My First Application!")
-master.geometry("750x750")
+master.geometry("500x500")
 
 def changeColor(btn):
     btn.configure(bg="blue")
