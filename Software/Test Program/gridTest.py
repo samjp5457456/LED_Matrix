@@ -22,12 +22,12 @@ def createColorButtons():
 
 
 def createClearandErase():
-    clearButton = Button(tk, text="Clear", fg="white", bg="gray", height=20, width=10)
-    clearButton.grid(row=16, column=20)
+    clearButton = Button(tk, text="Clear", fg="white", bg="gray")
+    clearButton.grid(row=16, column=20, pady = 8)
     clearButton['command'] = lambda btn=clearButton: clear(btn)
 
-    eraseButton = Button(tk, text="Erase", fg="white", bg="gray", height=15, width=10)
-    eraseButton.grid(row=18, column=20)
+    eraseButton = Button(tk, text="Erase", fg="white", bg="gray")
+    eraseButton.grid(row=18, column=20, pady = 8)
     eraseButton['command'] = lambda btn=eraseButton: erase(btn)
 
 
@@ -35,14 +35,19 @@ def clear(btn):
     for i in range(rows):
         for j in range(columns):
             btns[i][j]['bg'] = "gray"
+    resetColor()
+            
 
-
+def resetColor():
+    userColor = blankColor
+            
+            
 def erase(btn):
     print("Erased")
 
 
 def color(btn):
-    if (userColor == ""):
+    if (userColor == blankColor):
         print("No color selected")
     else:
         btn['bg'] = userColor
@@ -54,8 +59,8 @@ def changeColor(btn):
     
     
 def on_closing():
-    userColor = "gray"
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        resetColor()
         tk.destroy()
 
 
@@ -66,6 +71,8 @@ colors = ["White", "Red", "Green", "Blue", "Black", "Cyan", "Yellow"]
 colorButtons = [None for i in range(len(colors))]
 clearButton = None
 eraseButton = None
+blankColor = "gray"
+userColor = blankColor
 tk = Tk()
 tk.title("Pixel Board")
 
