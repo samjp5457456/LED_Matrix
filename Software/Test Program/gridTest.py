@@ -21,6 +21,26 @@ def createColorButtons():
         colorButtons[i].grid(row=i+5, column=20)
 
 
+def createClearandErase():
+    clearButton = Button(tk, text="Clear", fg="white", bg="gray", height=20, width=10)
+    clearButton.grid(row=16, column=20)
+    clearButton['command'] = lambda btn=clearButton: clear(btn)
+
+    eraseButton = Button(tk, text="Erase", fg="white", bg="gray", height=15, width=10)
+    eraseButton.grid(row=18, column=20)
+    eraseButton['command'] = lambda btn=eraseButton: erase(btn)
+
+
+def clear(btn):
+    for i in range(rows):
+        for j in range(columns):
+            btns[i][j]['bg'] = "gray"
+
+
+def erase(btn):
+    print("Erased")
+
+
 def color(btn):
     if (userColor == ""):
         print("No color selected")
@@ -31,6 +51,7 @@ def color(btn):
 def changeColor(btn):
     global userColor
     userColor = btn['bg']
+    
     
 def on_closing():
     userColor = "gray"
@@ -43,11 +64,14 @@ columns = 16
 btns = [[None for i in range(rows)] for j in range(columns)]
 colors = ["White", "Red", "Green", "Blue", "Black", "Cyan", "Yellow"]
 colorButtons = [None for i in range(len(colors))]
+clearButton = None
+eraseButton = None
 tk = Tk()
 tk.title("Pixel Board")
 
 createGrid()
 createColorButtons()
+createClearandErase()
 
 tk.protocol("WM_DELETE_WINDOW", on_closing)
 tk.mainloop()
